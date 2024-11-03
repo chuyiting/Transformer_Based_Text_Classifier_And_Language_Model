@@ -1,0 +1,13 @@
+name: transformer # Name of the environment
+channels:
+  - defaults
+  - conda-forge # Additional channel for extra packages
+  - pytorch # Channel specifically for PyTorch
+
+dependencies:
+  - python=3.9
+  - pytorch=1.13.0
+  - torchvision
+  - scikit-learn
+  - matplotlib
+  - pip
