@@ -14,9 +14,9 @@ linear_bias_m = 0.4
 use_deberta = False
 positional_encoding = None
 
-dropout = 0.2
+dropout = 0.1
 class Head(nn.Module):
-    def __init__(self, n_embd, head_size, block_size, use_dropout = False, look_forward = False):
+    def __init__(self, n_embd, head_size, block_size, use_dropout = True, look_forward = False):
         super().__init__()
         self.head_size = head_size
         self.look_forward = look_forward
@@ -65,7 +65,7 @@ class Head(nn.Module):
         return (attention_M, attention @ value)
     
 class DeBERTaHead(nn.Module):
-    def __init__(self, n_embd, head_size, block_size, use_dropout = False):
+    def __init__(self, n_embd, head_size, block_size, use_dropout = True):
         super().__init__()
         self.head_size = head_size
         self.content_key = nn.Linear(n_embd, head_size, bias=False)

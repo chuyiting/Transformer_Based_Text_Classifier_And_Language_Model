@@ -40,6 +40,7 @@ n_output = 3  # Output size for the classifier, we have 3 classes
 epochs_CLS = 15 # epochs for classifier training
 
 LM_map = {
+    'CLS': CLSModel,
     'LM': LanguageModel, # the default Model
     'ALiBi': ALiBi,
     'DeBERTa': DeBERTa
@@ -169,10 +170,12 @@ def main():
         test_CLS_loader = DataLoader(test_CLS_dataset, batch_size=batch_size, collate_fn=collate_batch)
         print('Finish loading CLS training dataset...')
 
-   
         # for the classification  task, you will train for a fixed number of epochs like this:
         classifier = CLSModel(vocab_size=tokenizer.vocab_size, n_embd=n_embd, n_head=n_head, block_size=block_size, n_layer=n_layer, n_classes=n_output, n_hidden=n_hidden)
         optimizer = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
+        
+        total_params = sum(p.numel() for p in classifier.parameters() if p.requires_grad)
+        print(f'Total number of parameters: {total_params}')
 
         start_time = time.time()
         print('start training...')
@@ -194,6 +197,7 @@ def main():
         end_time = time.time()
         print(f'Finish training, total training time: {end_time-start_time} seconds\n')
         
+
         accuracy = compute_classifier_accuracy(classifier, test_CLS_loader)
         print(f'CLS model accuracy on test dataset: {accuracy}')
 
@@ -213,6 +217,8 @@ def main():
         model_class = LM_map[args.model]
         lm = model_class(tokenizer.vocab_size, n_embd=n_embd, n_head=n_head, block_size=block_size, n_layer=n_layer, n_hidden=n_hidden)
         optimizer = torch.optim.Adam(lm.parameters(), lr=learning_rate)
+        total_params = sum(p.numel() for p in lm.parameters() if p.requires_grad)
+        print(f'Total number of parameters: {total_params}')
         
         start_time = time.time()
         print('start training...')
@@ -244,7 +250,7 @@ def main():
                 perplexity_wb.append(perplexity_wbush)
                 perplexity_ob.append(perplexity_obama)
                 eval_epochs.append(i+1)
-                print(f'B[{i+1}] Loss: {loss.item()}, Perplexity Train: {perplexity_train}, Perplexity WBush: {perplexity_wbush}, Perplexity Obama: {perplexity_obama}, Perplexity HBush: {perplexity_hbush}')
+                print(f'B[{i+1}] Loss: {loss.item():.2f}, Perplexity Train: {perplexity_train:.2f}, Perplexity WBush: {perplexity_wbush:.2f}, Perplexity Obama: {perplexity_obama:.2f}, Perplexity HBush: {perplexity_hbush:.2f}')
         
         end_time = time.time()
         print(f'Finish training, total training time: {end_time-start_time} seconds\n')
